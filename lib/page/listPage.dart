@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:chensino/http/api.dart';
 
 import 'package:chensino/http/httpUtil.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import '../entity/book_entity.dart';
 
@@ -14,12 +15,31 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  List<Book> books = [];
+  final TextEditingController _keywordController = TextEditingController();
+  late EasyRefreshController _scrollController;
 
-  ///加载数据
-  Future<List<Book>> fetchBookList(
-      { int pageNum = 1,
-       int pageSize = 10,
+  int pageNum = 1; // 当前页面数
+  int pageSize = 20; // 每页的数据数量
+  int total = 0;
+  final List<Book> _books = List.empty(growable: true);
+
+  ///查询
+  void _searchBookList() async {
+    BookListResponseEntity bookListResponseEntity = await queryBookList(
+        keyword: _keywordController.text, pageNum: 1, pageSize: 20);
+    if (bookListResponseEntity.ok) {
+      setState(() {
+        //清空数据
+        _books.clear();
+        _books.addAll(bookListResponseEntity.data.list);
+      });
+    }
+  }
+
+  ///加载数据，返回BookListResponseEntity
+  Future<BookListResponseEntity> queryBookList(
+      {required int pageNum,
+      required int pageSize,
       String keyword = '',
       String sort = 'create_time',
       bool fetchAll = true}) async {
@@ -27,64 +47,116 @@ class _ListPageState extends State<ListPage> {
     final response = await HttpUtil.instance.get(
         "${Api.SEARCH_BOOK_LIST}?pageNum=$pageNum&pageSize=$pageSize&fetchAll=$fetchAll&sort=$sort&keyword=$keyword");
     Map<String, dynamic> map = json.decode(response.toString());
-    BookListResponseEntity projectEntity = BookListResponseEntity.fromJson(map);
+    return BookListResponseEntity.fromJson(map);
+  }
+
+  ///初始化第一页数据
+  void initData() async {
+    BookListResponseEntity bookListResponseEntity =
+        await queryBookList(pageNum: 1, pageSize: 20);
+    if (bookListResponseEntity.ok) {
+      setState(() {
+        total = bookListResponseEntity.data.total;
+        //清空数据
+        _books.clear();
+        _books.addAll(bookListResponseEntity.data.list);
+      });
+    }
+  }
+
+  ///加载更多
+  void _loadMore() async {
     setState(() {
-      books = projectEntity.data;
+      pageNum++;
     });
-    return projectEntity.data;
+    //1. 获取数据
+    BookListResponseEntity bookListResponseEntity =
+        await queryBookList(pageNum: pageNum, pageSize: pageSize);
+    if (bookListResponseEntity.ok) {
+      setState(() {
+        _books.addAll(bookListResponseEntity.data.list);
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    fetchBookList(pageNum: 1, pageSize: 2);
+    _scrollController = EasyRefreshController(
+      controlFinishRefresh: true,
+      controlFinishLoad: true,
+    );
+    _searchBookList();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('搜索'),
-        actions:  [
+        actions: [
           Row(
             children: [
               SizedBox(
                 width: 200.0,
                 child: TextField(
-                  decoration: InputDecoration(
-                    hintText: '查找小说',
+                  controller: _keywordController,
+                  decoration: const InputDecoration(
+                    hintText: '输入书名、作者名查找',
                     border: InputBorder.none,
                   ),
                   onSubmitted: (value) {
                     // 执行搜索操作
-                    if (value.isNotEmpty) {
-                      print('搜索内容：$value');
-                      fetchBookList(keyword: value);
-                    }else{
-                      fetchBookList();
-                    }
+                    _loadMore();
                   },
                 ),
               ),
+              ElevatedButton(
+                  onPressed: () => _searchBookList(), child: const Text("搜索"))
             ],
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: books.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            // leading: Image.network(chapters[index].imageUrl),
-            title: Text(books[index].bookName ?? ''),
-            subtitle: Text(books[index].bookDesc ?? '',
-                style: const TextStyle(color: Colors.grey, fontSize: 10)),
-            trailing: Text(books[index].authorName),
-            onTap: () {
-              // 弹窗丧偶
-
-            },
-          );
+      body: EasyRefresh(
+        controller: _scrollController,
+        header: const ClassicHeader(),
+        footer: const ClassicFooter(),
+        onRefresh: () async {
+          _searchBookList();
+          if (!mounted) {
+            return;
+          }
+          _scrollController.finishRefresh();
+          _scrollController.resetFooter();
         },
+        onLoad: () async {
+          _loadMore();
+          if (!mounted) {
+            return;
+          }
+          _scrollController.finishLoad(_books.length >= total
+              ? IndicatorResult.noMore
+              : IndicatorResult.success);
+        },
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(_books[index].bookName),
+              subtitle: Text(_books[index].bookDesc ?? ''),
+              trailing: Text(_books[index].authorName),
+              onTap: () => {
+                //进入详情页
+                Navigator.of(context).pushNamed('/detail', arguments: _books[index].id)
+              },
+            );
+          },
+          itemCount: _books.length,
+        ),
       ),
     );
   }

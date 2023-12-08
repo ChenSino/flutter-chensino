@@ -1,5 +1,6 @@
 import 'dart:core';
 
+/// 书籍实体类
 class Book {
   late String id;
   late String categoryId;
@@ -40,11 +41,32 @@ class Book {
   }
 }
 
+/// 书籍分页实体类
+class BookPageDataEntity {
+  late int pageNum;
+  late int pageSize;
+  late int total;
+  late int pages;
+  late List<Book> list;
+
+  BookPageDataEntity.fromJson(Map<String, dynamic> json) {
+    pageNum =int.parse(json['pageNum']);
+    pageSize =int.parse(json['pageSize']);
+    total = int.parse(json['total']);
+    pages = int.parse(json['pages']);
+    list = List.empty(growable: true);
+    for (var book in (json['list'] as List)) {
+      list.add(Book.fromJson(book));
+    }
+  }
+}
+
+///http响应
 class BookListResponseEntity {
   late String code;
   late String message;
   late bool ok;
-  late List<Book> data;
+  late BookPageDataEntity data;
 
   BookListResponseEntity(
       {required this.code,
@@ -53,65 +75,13 @@ class BookListResponseEntity {
       required this.data});
 
   BookListResponseEntity.fromJson(Map<String, dynamic> json) {
-    data = [];
+    code = json['code'];
+    message = json['message'];
+    ok = json['ok'];
     if (json['data'] != null) {
-      for (var book in (json['data']['list'] as List)) {
-        data.add(Book.fromJson(book));
-      }
+      data = BookPageDataEntity.fromJson(json['data']);
     }
   }
-}
-
-class ResponseEntity<T> {
-  String code;
-  String message;
-  bool ok;
-  T data;
-
-  ResponseEntity(
-      {required this.code,
-      required this.message,
-      required this.ok,
-      required this.data});
-}
-
-class NovelList {
-  late int total;
-  late int pageSize;
-  late int pageNum;
-  late List<Novel> data;
-
-  NovelList.build({
-    required this.total,
-    required this.pageSize,
-    required this.pageNum,
-    required this.data,
-  });
-
-  NovelList.fromJson(Map<String, dynamic> json) {
-    total = json['total'];
-    pageSize = json['pageSize'];
-    pageNum = json['pageNum'];
-    if (json['data'] != null) {}
-  }
-}
-
-class Novel {
-  String name;
-  String imageUrl;
-  String description;
-  String category;
-  int id;
-  String author;
-
-  Novel.build({
-    required this.author,
-    required this.name,
-    required this.imageUrl,
-    required this.description,
-    required this.category,
-    required this.id,
-  });
 }
 
 class Chapter {

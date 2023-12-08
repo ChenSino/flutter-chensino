@@ -60,7 +60,7 @@ class HttpUtil {
    * get请求
    */
   get(url, {data, options, cancelToken}) async {
-    late Response response;
+    late Response? response;
     try {
       response = await dio.get(url,
           queryParameters: data, options: options, cancelToken: cancelToken);
@@ -74,6 +74,7 @@ class HttpUtil {
     } on DioError catch (e) {
       print('get error---------$e');
       formatError(e);
+      response = e.response;
     }
     return response;
   }
