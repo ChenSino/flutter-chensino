@@ -1,10 +1,12 @@
+import 'package:chensino/page/chapterContent.dart';
 import 'package:chensino/page/novelDetail.dart';
 import 'package:flutter/material.dart';
 
 import '../controller/auth.dart';
+import '../page/chapterPage.dart';
 import '../page/errorPage.dart';
 import '../page/index.dart';
-import '../page/listPage.dart';
+import '../page/bookPage.dart';
 import '../page/loginPage.dart';
 import '../page/webview/webView.dart';
 
@@ -14,9 +16,11 @@ class CustomRoute {
     final Map<String, WidgetBuilder> routes = {
       '/': (context) => const HomePage(),
       '/login': (context) => const LoginPage(),
-      '/list': (context) => const ListPage(),
+      '/list': (context) => const BookListPage(),
       '/webview': (context) => const WebViewExample(),
       '/detail': (context) => const NovelDetailPage(),
+      '/chapterList': (context) => const ChapterListPage(),
+      '/chapter': (context) => const ChapterPage(),
     };
     // 获取路由名称
     final String name = settings.name ?? Navigator.defaultRouteName;
@@ -43,6 +47,8 @@ class CustomRoute {
       '/list',
       '/webview',
       '/detail',
+      '/chapterList',
+      '/chapter',
     ];
     return whiteList;
   }

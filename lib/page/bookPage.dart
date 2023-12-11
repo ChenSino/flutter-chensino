@@ -7,14 +7,14 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import '../entity/book_entity.dart';
 
-class ListPage extends StatefulWidget {
-  const ListPage({super.key});
+class BookListPage extends StatefulWidget {
+  const BookListPage({super.key});
 
   @override
-  State<ListPage> createState() => _ListPageState();
+  State<BookListPage> createState() => _BookListPageState();
 }
 
-class _ListPageState extends State<ListPage> {
+class _BookListPageState extends State<BookListPage> {
   final TextEditingController _keywordController = TextEditingController();
   late EasyRefreshController _scrollController;
 

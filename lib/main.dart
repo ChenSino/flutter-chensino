@@ -4,7 +4,7 @@ import 'package:chensino/route/CustomRoute.dart';
 import 'package:flutter/material.dart';
 
 import './page/index.dart';
-import './page/listPage.dart';
+import './page/bookPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const HomePage(),
-    const ListPage(),
+    const BookListPage(),
     const UserProfile(),
   ];
 

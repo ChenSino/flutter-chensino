@@ -83,35 +83,3 @@ class BookListResponseEntity {
     }
   }
 }
-
-class Chapter {
-  late int? id;
-  late int bookId;
-  late int chapterNum;
-  late String chapterName;
-  late String chapterWordCount;
-  late String chapterUpdateTime;
-  late String isVip;
-
-  Chapter.build({
-    required this.bookId,
-    required this.chapterNum,
-    required this.chapterName,
-    required this.chapterWordCount,
-    required this.chapterUpdateTime,
-    required this.isVip,
-    this.id,
-  });
-
-  Chapter.fromJson(Map<String, dynamic> json) {
-    Chapter.build(
-      bookId: json['bookId'],
-      chapterNum: json['chapterNum'],
-      chapterName: json['chapterName'],
-      chapterWordCount: json['chapterWordCount'],
-      chapterUpdateTime: json['chapterUpdateTime'],
-      isVip: json['isVip'],
-      id: json['id'],
-    );
-  }
-}

@@ -8,6 +8,22 @@ class NovelDetailPage extends StatefulWidget {
 }
 
 class _NovelDetailPageState extends State<NovelDetailPage> {
+  late String bookId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration.zero, () {
+      // 获取传递的参数，并进行操作
+      final String param = ModalRoute.of(context)?.settings.arguments as String;
+      print("paraml...==>$param");
+      setState(() {
+        bookId = param;
+      });
+    });
+  }
+
   Column _buildButtonColumn(Color color, IconData icon, String label) {
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -104,7 +120,14 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        print("跳转到章节列表");
+                        //跳转到章节列表，并传递book_id参数
+                        Navigator.of(context).pushNamed(
+                          '/chapterList',
+                          arguments: bookId,
+                        );
+                      },
                       child: Text('开始阅读'),
                     ),
                   ),
