@@ -46,8 +46,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    const HomePage(),
     const BookListPage(),
+    const BookListPage(),
+    const HomePage(),
     const UserProfile(),
   ];
 
@@ -72,12 +73,16 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '首页',
+            icon: Icon(Icons.book_outlined),
+            label: '书城',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: '列表',
+            icon: Icon(Icons.category),
+            label: '分类',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: '书架',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -85,8 +90,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _currentIndex,
+        backgroundColor: Colors.grey.withOpacity(0.1),
+        // unselectedItemColor: Colors.black.withOpacity(0.5),
         selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
+        iconSize: 18,
+        elevation: 4.0,
         showSelectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
