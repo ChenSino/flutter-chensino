@@ -1,3 +1,4 @@
+import 'package:chensino/page/categoryPage.dart';
 import 'package:chensino/page/loginPage.dart';
 import 'package:chensino/page/userProfile.dart';
 import 'package:chensino/route/CustomRoute.dart';
@@ -20,16 +21,19 @@ class MyApp extends StatelessWidget {
 
 
 
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: '洛星星',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      onGenerateRoute: (settings) => CustomRoute.onGenerateRoute(settings),
-      home: const LoginPage(),
-      debugShowCheckedModeBanner: false,
+    return PreferredSize(
+      preferredSize:  const Size.fromHeight(0.0),
+      child:  MaterialApp(
+        navigatorKey: navigatorKey,
+        title: '洛星星小说阅读器',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        onGenerateRoute: (settings) => CustomRoute.onGenerateRoute(settings),
+        home: const LoginPage(),
+        debugShowCheckedModeBanner: false,
+      )
     );
   }
 }
@@ -47,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const BookListPage(),
-    const BookListPage(),
+    const BookCategoryPage(),
     const HomePage(),
     const UserProfile(),
   ];
@@ -56,8 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Container(),
-        toolbarHeight: 60,
+        toolbarHeight: 40,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Center(
           child: Text(widget.title),
@@ -90,11 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _currentIndex,
-        backgroundColor: Colors.grey.withOpacity(0.1),
         // unselectedItemColor: Colors.black.withOpacity(0.5),
         selectedItemColor: Colors.blue,
         iconSize: 18,
-        elevation: 4.0,
         showSelectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
